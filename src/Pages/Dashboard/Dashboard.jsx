@@ -350,7 +350,7 @@ const Dashboard = () => {
               justifyContent: "space-between",
             }}
           >
-            <Link to="/notification">
+            {/* <Link to="/notification">
               <div
                 style={{
                   background: "#F2F2F2",
@@ -385,7 +385,7 @@ const Dashboard = () => {
                   5
                 </div>
               </div>
-            </Link>
+            </Link> */}
             <Link
               to={"/admin-profile"}
               style={{
