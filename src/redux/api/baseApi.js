@@ -6,7 +6,6 @@ import { toast } from "sonner";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BACKEND_API_URL,
-  credentials: "include",
   prepareHeaders: (header) => {
     const token = getAccessToken();
 
@@ -63,7 +62,6 @@ const baseQueryWithRefreshToken = async (args, api, extraOptions) => {
       window.location.replace("/login");
     }
   }
-  // console.log(result);
   return result;
 };
 
