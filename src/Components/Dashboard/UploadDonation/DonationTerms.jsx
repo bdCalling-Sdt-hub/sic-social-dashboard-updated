@@ -1,117 +1,89 @@
-import JoditEditor from "jodit-react";
-import React, { useRef, useState, useEffect } from "react";
-import { toast } from "sonner";
-import Swal from "sweetalert2";
+import React, { useRef, useState, useEffect } from 'react';
+import JoditEditor from 'jodit-react';
+import { toast } from 'sonner';
+import { useAddDonationMutation, useGetDonationQuery } from '../../../redux/api/donationApi';
 
-const DonationTerms = ({
-  setActiveTab,
-  handleSubmitAllData,
-  setTermsData,
-  donationData,
-  termsData,
-}) => {
-  const editor = useRef(null);
-  const [content, setContent] = useState(termsData || ""); // Initialize with termsData
+const DonationTerms = () => {
+      const [addDonation, { isLoading }] = useAddDonationMutation();
+      const { data: donationData } = useGetDonationQuery({});
 
-  const config = {
-    readonly: false,
-    placeholder: "Typing terms...",
-    style: {
-      height: 300,
-      background: "#FBF5EB",
-    },
-  };
+      const editor = useRef(null);
+      const [content, setContent] = useState(''); // Initialize with termsData
 
-  // Update termsData with the current content whenever content changes
-  useEffect(() => {
-    setTermsData(content);
-  }, [content, setTermsData]);
+      useEffect(() => {
+            if (donationData?.data?.length > 0) {
+                  const donationDetails = donationData.data[0].termsAndConditions;
+                  setContent(donationDetails?.content || '');
+            }
+      }, [donationData]);
 
-  const handleNext = () => {
-    // Trigger blur manually to capture the latest content
-    editor.current.blur();
+      const config = {
+            readonly: false,
+            placeholder: 'Typing terms...',
+            style: {
+                  height: 300,
+                  background: '#FBF5EB',
+            },
+      };
+      const handleAddDonation = async () => {
+            try {
+                  const formData = new FormData();
+                  const updatedData = {
+                        termsAndConditions: {
+                              content,
+                        },
+                  };
+                  formData.append('data', JSON.stringify(updatedData));
 
-    if (!content) {
-      toast.error("Please fill in all the required fields before proceeding.");
-      return;
-    }
-
-    Swal.fire({
-      title: "Are you sure?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        if (donationData?.data[0]) {
-          handleSubmitAllData("update");
-        } else {
-          handleSubmitAllData("add");
-        }
-      }
-    });
-  };
-
-  return (
-    <div>
-      <p className="text-[#A1A1A1] font-semibold text-lg py-4">
-        Terms & conditions
-      </p>
-      <div>
-        <div>
-          <JoditEditor
-            ref={editor}
-            value={content}
-            config={config}
-            tabIndex={1}
-            onChange={() => {}} // Capture content on change
-            onBlur={(newContent) => setContent(newContent)} // Capture on blur as well
-          />
-        </div>
-        <div
-          style={{
-            marginTop: 24,
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
-            gap: 2,
-          }}
-        >
-          <button
-            onClick={() => setActiveTab("2")}
-            style={{
-              height: 44,
-              width: 150,
-              backgroundColor: "#D29E3B",
-              color: "white",
-              borderRadius: "8px",
-              fontWeight: 500,
-              fontSize: 14,
-            }}
-          >
-            Back
-          </button>
-          <button
-            onClick={handleNext}
-            style={{
-              height: 44,
-              width: 150,
-              backgroundColor: "#D29E3B",
-              color: "white",
-              borderRadius: "8px",
-              fontWeight: 500,
-              fontSize: 14,
-            }}
-          >
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+                  const res = await addDonation(formData).unwrap();
+                  if (res.success) {
+                        toast.success(res.message);
+                  }
+            } catch (error) {
+                  toast.error(error.message);
+            }
+      };
+      return (
+            <div>
+                  <p className="text-[#A1A1A1] font-semibold text-lg py-4">Terms & conditions</p>
+                  <div>
+                        <div>
+                              <JoditEditor
+                                    ref={editor}
+                                    value={content}
+                                    config={config}
+                                    tabIndex={1}
+                                    onChange={() => {}} // Capture content on change
+                                    onBlur={(newContent) => setContent(newContent)} // Capture on blur as well
+                              />
+                        </div>
+                        <div
+                              style={{
+                                    marginTop: 24,
+                                    display: 'flex',
+                                    justifyContent: 'end',
+                                    alignItems: 'center',
+                                    gap: 2,
+                              }}
+                        >
+                              <button
+                                    onClick={handleAddDonation}
+                                    style={{
+                                          height: 44,
+                                          width: 150,
+                                          backgroundColor: '#D29E3B',
+                                          color: 'white',
+                                          borderRadius: '8px',
+                                          fontWeight: 500,
+                                          fontSize: 14,
+                                    }}
+                              >
+                                    Submit
+                              </button>
+                        </div>
+                  </div>
+            </div>
+      );
 };
 
 export default DonationTerms;
