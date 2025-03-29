@@ -26,7 +26,7 @@ const Login = () => {
       }
     } catch (error) {
       console.log(error);
-      // toast.error(error.message);
+      toast.error(error.data.message || "Something went wrong while login!!!");
     }
   };
 
@@ -34,7 +34,7 @@ const Login = () => {
 
   return (
     <div
-      className="   "
+      className=""
       style={{
         display: "flex",
         alignItems: "center",
@@ -54,7 +54,7 @@ const Login = () => {
       >
         <Form
           name="normal_login"
-          className="login-form backdrop-blur-lg bg-white/70"
+          className="backdrop-blur-lg login-form bg-white/70"
           initialValues={{
             remember: true,
           }}
@@ -78,7 +78,7 @@ const Login = () => {
           >
             Login in to Account
           </h1>
-          <p className="text-lg py-6 text-center">
+          <p className="py-6 text-lg text-center">
             Please enter your email and password to continue
           </p>
           <div style={{ marginBottom: "24px" }}>
